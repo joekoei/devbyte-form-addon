@@ -1,0 +1,67 @@
+.mcf-form {
+    max-width: 600px;
+    margin: 2em auto;
+    padding: 2em;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.mcf-form h2 {
+    margin-top: 0;
+    font-size: 1.5em;
+    margin-bottom: 1em;
+    text-align: center;
+    color: #333;
+}
+
+.mcf-form p {
+    margin-bottom: 1.2em;
+}
+
+.mcf-form label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5em;
+    color: #333;
+}
+
+.mcf-form input[type="text"],
+.mcf-form input[type="email"],
+.mcf-form textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1em;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+}
+
+.mcf-form input[type="text"]:focus,
+.mcf-form input[type="email"]:focus,
+.mcf-form textarea:focus {
+    border-color: #0073aa;
+    outline: none;
+}
+
+.mcf-form textarea {
+    resize: vertical;
+}
+
+.mcf-form button[type="submit"] {
+    background-color: #0073aa;
+    color: #fff;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 5px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.mcf-form button[type="submit"]:hover {
+    background-color: #005d8f;
+}
