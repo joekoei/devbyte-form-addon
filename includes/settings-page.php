@@ -31,6 +31,53 @@ function mcf_render_settings_page() {
     <?php
 }
 
+function mcf_render_logs_page() {
+    $logs = get_option('mcf_blocked_logs', []);
+    if (!is_array($logs)) {
+        $logs = [];
+    }
+
+    // Wis logs
+    if (isset($_POST['mcf_clear_logs'])) {
+        update_option('mcf_blocked_logs', []);
+        echo '<div class="updated"><p>Logboek is gewist.</p></div>';
+        $logs = [];
+    }
+
+    ?>
+    <div class="wrap">
+        <h1>Geblokkeerde Inzendingen</h1>
+        <form method="post">
+            <?php submit_button('Wis logboek', 'delete', 'mcf_clear_logs'); ?>
+        </form>
+        <table class="widefat fixed striped">
+            <thead>
+            <tr>
+                <th>Datum/Tijd</th>
+                <th>E-mailadres</th>
+                <th>Reden</th>
+                <th>IP-adres</th>
+            </tr>
+            </thead>
+            <tbody>
+            <?php if (empty($logs)): ?>
+                <tr><td colspan="4">Geen geblokkeerde inzendingen gevonden.</td></tr>
+            <?php else: ?>
+                <?php foreach (array_reverse($logs) as $log): ?>
+                    <tr>
+                        <td><?php echo esc_html($log['time']); ?></td>
+                        <td><?php echo esc_html($log['email']); ?></td>
+                        <td><?php echo esc_html($log['reason']); ?></td>
+                        <td><?php echo esc_html($log['ip']); ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
+    <?php
+}
+
 // Registreer de instellingen
 function mcf_register_settings() {
     register_setting('mcf_settings_group', 'mcf_email_to');
@@ -59,6 +106,15 @@ function mcf_register_settings() {
         'mcf_blocked_emails_field_html',
         'mcf-settings',
         'mcf_main_section'
+    );
+
+
+    add_settings_field(
+        "mcf_logs",
+        "Logs van geblokkeerde email pogingen",
+        "mcf_render_logs_page",
+        "mcf-settings",
+        "mcf_main_section"
     );
 }
 add_action('admin_init', 'mcf_register_settings');
