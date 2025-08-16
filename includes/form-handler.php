@@ -16,13 +16,40 @@ function mcf_handle_form_submission() {
     $email   = sanitize_email($_POST['mcf_email'] ?? '');
     $message = sanitize_textarea_field($_POST['mcf_message'] ?? '');
 
-    // ✅ Basisvalidatie
     if (empty($name) || empty($email) || empty($message) || !is_email($email)) {
         echo '<div class="mcf-form-message" style="color: red;">Ongeldige invoer. Controleer je gegevens.</div>';
         return;
     }
 
-    // 📬 Ontvanger uit instellingen
+    // 🚫 Controleer geblokkeerde adressen/domeinen
+    $blocked_list = get_option('mcf_blocked_emails', '');
+    if (!empty($blocked_list)) {
+        $blocked_items = array_filter(array_map('trim', explode("\n", $blocked_list)));
+
+        foreach ($blocked_items as $blocked) {
+            $blocked = strtolower($blocked);
+            $email_lc = strtolower($email);
+
+            // Exact e-mailadres
+            if ($email_lc === $blocked) {
+                echo '<div class="mcf-form-message" style="color: red;">Dit e-mailadres is geblokkeerd.</div>';
+                return;
+            }
+
+            // Domein (@voorbeeld.com)
+            if (strpos($blocked, '@') === 0 && str_ends_with($email_lc, substr($blocked, 1))) {
+                echo '<div class="mcf-form-message" style="color: red;">E-mails van dit domein zijn geblokkeerd.</div>';
+                return;
+            }
+
+            // Eindcode (.ru, .cn, .xyz)
+            if (strpos($blocked, '.') === 0 && str_ends_with($email_lc, $blocked)) {
+                echo '<div class="mcf-form-message" style="color: red;">E-mails met dit domein-eindstuk zijn geblokkeerd.</div>';
+                return;
+            }
+        }
+    }
+
     $to = get_option('mcf_email_to');
     if (!$to || !is_email($to)) {
         echo '<div class="mcf-form-message" style="color: red;">Fout: Geen geldig e-mailadres ingesteld.</div>';
@@ -46,6 +73,4 @@ function mcf_handle_form_submission() {
         echo '<div class="mcf-form-message" style="color: red;">Er ging iets mis bij het verzenden. Probeer het later opnieuw.</div>';
     }
 }
-
-// ✅ Automatisch uitvoeren bij page load
 add_action('wp', 'mcf_handle_form_submission');

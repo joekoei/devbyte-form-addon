@@ -4,13 +4,13 @@ if (!defined('ABSPATH')) exit;
 // Voeg een nieuw menu-item toe in de admin sidebar
 function mcf_add_admin_menu() {
     add_menu_page(
-        'DevByte - Contact Formulier Instellingen',      // Pagina titel
-        'DevByte - Contact Formulier',                   // Menu titel
-        'manage_options',                     // Capabilities
-        'mcf-settings',                       // Menu slug
-        'mcf_render_settings_page',           // Callback functie
-        'dashicons-email',                    // Icoon (WordPress dashicon)
-        26                                    // Positie in menu (optioneel)
+        'DevByte - Contact Formulier Instellingen',
+        'DevByte - Contact Formulier',
+        'manage_options',
+        'mcf-settings',
+        'mcf_render_settings_page',
+        'dashicons-email',
+        26
     );
 }
 add_action('admin_menu', 'mcf_add_admin_menu');
@@ -34,6 +34,7 @@ function mcf_render_settings_page() {
 // Registreer de instellingen
 function mcf_register_settings() {
     register_setting('mcf_settings_group', 'mcf_email_to');
+    register_setting('mcf_settings_group', 'mcf_blocked_emails');
 
     add_settings_section(
         'mcf_main_section',
@@ -42,10 +43,20 @@ function mcf_register_settings() {
         'mcf-settings'
     );
 
+    // Ontvanger e-mail
     add_settings_field(
         'mcf_email_to',
         'E-mailadres om naar te sturen',
         'mcf_email_to_field_html',
+        'mcf-settings',
+        'mcf_main_section'
+    );
+
+    // Geblokkeerde adressen/domeinen
+    add_settings_field(
+        'mcf_blocked_emails',
+        'Geblokkeerde e-mails of domeinen',
+        'mcf_blocked_emails_field_html',
         'mcf-settings',
         'mcf_main_section'
     );
@@ -56,4 +67,14 @@ add_action('admin_init', 'mcf_register_settings');
 function mcf_email_to_field_html() {
     $value = esc_attr(get_option('mcf_email_to', ''));
     echo '<input type="email" name="mcf_email_to" value="' . $value . '" class="regular-text">';
+}
+
+// Het invoerveld voor geblokkeerde e-mails/domeinen
+function mcf_blocked_emails_field_html() {
+    $value = esc_textarea(get_option('mcf_blocked_emails', ''));
+    echo '<textarea name="mcf_blocked_emails" rows="5" cols="50" class="large-text">' . $value . '</textarea>';
+    echo '<p class="description">Voer één e-mailadres of domein per regel in. Voorbeelden:<br>
+          <code>spam@voorbeeld.com</code><br>
+          <code>@spamsite.com</code> (blokkeert alles van dit domein)<br>
+          <code>.ru</code> (blokkeert alle adressen die eindigen op .ru)</p>';
 }
